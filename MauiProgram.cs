@@ -13,6 +13,11 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
+#if ANDROID
+		builder.ConfigureMauiHandlers(handlers =>
+			handlers.AddHandler<ImmediateDatePicker, Platforms.Android.ImmediateDatePickerHandler>());
+#endif
+
 		return builder.Build();
 	}
 }

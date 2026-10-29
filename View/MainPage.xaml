@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ActivityRecordSheet_ver2"
              x:Class="ActivityRecordSheet_ver2.MainPage"
              Shell.NavBarIsVisible="False">
 
@@ -9,13 +10,14 @@
               ColumnDefinitions="Auto,*,Auto"
               Padding="8,4"
               HeightRequest="56"
-              BackgroundColor="{AppThemeBinding Light=#F2F2F2, Dark=#252525}">
+              BackgroundColor="#008000">
             <ImageButton Grid.Column="0"
                          Source="menu.png"
                          WidthRequest="48"
                          HeightRequest="48"
                          Padding="12"
                          BackgroundColor="Transparent"
+                         HandlerChanged="OnControlHandlerChanged"
                          SemanticProperties.Description="メニュー"
                          ToolTipProperties.Text="メニュー" />
             <ImageButton Grid.Column="2"
@@ -24,41 +26,116 @@
                          HeightRequest="48"
                          Padding="12"
                          BackgroundColor="Transparent"
+                         HandlerChanged="OnControlHandlerChanged"
                          SemanticProperties.Description="設定"
                          ToolTipProperties.Text="設定" />
         </Grid>
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout
-                Spacing="25"
-                Padding="30,0"
-                VerticalOptions="Center">
-
-                <Image
-                    Source="dotnet_bot.png"
-                    SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                    HeightRequest="200"
-                    HorizontalOptions="Center" />
-
-                <Label
-                    Text="Hello, World!"
-                    SemanticProperties.HeadingLevel="Level1"
-                    FontSize="32"
-                    HorizontalOptions="Center" />
-
-                <Label
-                    Text="Welcome to .NET Multi-platform App UI"
-                    SemanticProperties.HeadingLevel="Level2"
-                    SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                    FontSize="18"
-                    HorizontalOptions="Center" />
-
-                <Button
-                    x:Name="CounterBtn"
-                    Text="Click me"
-                    SemanticProperties.Hint="Counts the number of times you click"
-                    Clicked="OnCounterClicked"
-                    HorizontalOptions="Center" />
-
+            <VerticalStackLayout Padding="24,20" Spacing="12">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Start">
+                    <Label Text="日付"
+                           TextColor="#000000"
+                           FontSize="18"
+                           VerticalOptions="Center" />
+                    <local:ImmediateDatePicker x:Name="RecordDatePicker"
+                                FontSize="21"
+                                Format="yyyy/MM/dd"
+                                VerticalOptions="Center"
+                                HandlerChanged="OnControlHandlerChanged"
+                                SemanticProperties.Description="日付" />
+                </HorizontalStackLayout>
+                <Label Text="気分"
+                       Margin="0,13,0,0"
+                       TextColor="#000000"
+                       FontSize="18"
+                       HorizontalOptions="Start" />
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Start">
+                    <Slider x:Name="MoodSlider"
+                        Minimum="1"
+                        Maximum="5"
+                        Value="3"
+                        WidthRequest="280"
+                        HorizontalOptions="Start"
+                        MinimumTrackColor="#009000"
+                        MaximumTrackColor="#009000"
+                        ThumbColor="#009000"
+                        ValueChanged="OnMoodValueChanged"
+                        HandlerChanged="OnMoodSliderHandlerChanged"
+                        Loaded="OnMoodSliderLoaded"
+                        SemanticProperties.Description="気分"
+                        SemanticProperties.Hint="1から5まで、0.5刻みで選択" />
+                    <Label Text="{Binding Source={x:Reference MoodSlider}, Path=Value, StringFormat='{0:0.#}'}"
+                           TextColor="#000000"
+                           VerticalOptions="Center"
+                           SemanticProperties.Description="現在の気分の値" />
+                </HorizontalStackLayout>
+                <Label Text="体調"
+                       TextColor="#000000"
+                       FontSize="18"
+                       HorizontalOptions="Start" />
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Start">
+                    <Slider x:Name="BodySlider"
+                        Minimum="1"
+                        Maximum="5"
+                        Value="3"
+                        WidthRequest="280"
+                        HorizontalOptions="Start"
+                        MinimumTrackColor="#009000"
+                        MaximumTrackColor="#009000"
+                        ThumbColor="#009000"
+                        ValueChanged="OnMoodValueChanged"
+                        HandlerChanged="OnMoodSliderHandlerChanged"
+                        Loaded="OnRatingSliderLoaded"
+                        SemanticProperties.Description="体調"
+                        SemanticProperties.Hint="1から5まで、0.5刻みで選択" />
+                    <Label Text="{Binding Source={x:Reference BodySlider}, Path=Value, StringFormat='{0:0.#}'}"
+                           TextColor="#000000"
+                           VerticalOptions="Center"
+                           SemanticProperties.Description="現在の体調の値" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Start" Margin="0,18,0,0">
+                    <Label Text="就寝"
+                           TextColor="#000000"
+                           FontSize="18"
+                           VerticalOptions="Center" />
+                    <TimePicker x:Name="BedtimeTimePicker"
+                                FontSize="18"
+                                Time="00:00:00"
+                                Format="HH:mm"
+                                VerticalOptions="Center"
+                                HandlerChanged="OnControlHandlerChanged"
+                                SemanticProperties.Description="就寝時刻" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Start" Margin="0,13,0,0">
+                    <Label Text="起床"
+                           TextColor="#000000"
+                           FontSize="18"
+                           VerticalOptions="Center" />
+                    <TimePicker x:Name="SecondWakeUpTimePicker"
+                                FontSize="18"
+                                Time="00:00:00"
+                                Format="HH:mm"
+                                VerticalOptions="Center"
+                                HandlerChanged="OnControlHandlerChanged"
+                                SemanticProperties.Description="起床時刻" />
+                </HorizontalStackLayout>
+                <Label Text="コメント"
+                       Margin="0,18,0,0"
+                       TextColor="#000000"
+                       FontSize="18"
+                       HorizontalOptions="Start" />
+                <Editor x:Name="CommentEditor"
+                        Text=""
+                        FontSize="18"
+                        HeightRequest="90"
+                        AutoSize="Disabled"
+                        HorizontalOptions="Fill"
+                        HandlerChanged="OnControlHandlerChanged"
+                        SemanticProperties.Description="コメント" />
+                <Button Text="登録"
+                        Margin="0,28,0,0"
+                        HorizontalOptions="Start"
+                        HandlerChanged="OnControlHandlerChanged" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
